@@ -1,12 +1,11 @@
-import {AppRegistry, Platform} from 'react-native';
-import {name as appName} from './app.json';
-import App from './Screen';
+import Screen from './Screen';
+import React from 'react';
+import {SafeAreaProvider} from 'react-native-safe-area-context';
 
-AppRegistry.registerComponent(appName, () => App);
-
-if (Platform.OS === 'web') {
-  const rootTag = document.getElementById('root');
-  AppRegistry.runApplication(appName, {rootTag});
+export default function App() {
+  return (
+    <SafeAreaProvider>
+      <Screen />
+    </SafeAreaProvider>
+  );
 }
-
-export default App;
