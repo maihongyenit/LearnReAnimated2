@@ -1,79 +1,68 @@
 import Animated, {
   useSharedValue,
-  withTiming,
-  useAnimatedStyle,
-  useDerivedValue,
-  Easing,
-  withSpring,
-  withDecay,
-  withRepeat,
-  interpolate,
+  useAnimatedScrollHandler,
 } from 'react-native-reanimated';
-import {View, StyleSheet, Dimensions, TouchableOpacity} from 'react-native';
-import React, {useState} from 'react';
-import {ScrollView} from 'react-native-gesture-handler';
+import {View, StyleSheet} from 'react-native';
+import React from 'react';
+import {useSafeAreaInsets} from 'react-native-safe-area-context';
 
-export default function AnimatedStyleUpdateExample(props) {
-  const [toggle, setToggle] = useState(undefined);
-  const windowHeight = Dimensions.get('window').height;
-  const windowWidth = Dimensions.get('window').width;
-  const translateYValue = useDerivedValue(() => {
-    if (toggle === undefined) {
-      return withTiming(0);
+import AnimatedCard from './components/AnimatedCard';
+
+import cardsData from './datas/datas.json';
+import {cardHeight, cardTitleHeight, cardPadding} from './utils/Cons';
+import {AnimatedContext} from './components/Context';
+
+export default function Screen(props) {
+  const insets = useSafeAreaInsets();
+  const animatedY = useSharedValue(0);
+  const scrollHandler = useAnimatedScrollHandler((event) => {
+    animatedY.value = event.contentOffset.y;
+  });
+
+  const renderedCards = cardsData.map((card, i) => {
+    const inputRange = [-(cardPadding + cardHeight - cardTitleHeight), 0];
+    const outputRange = [0, (cardPadding + cardHeight - cardTitleHeight) * -i];
+    if (i > 0) {
+      inputRange.push((cardPadding + cardTitleHeight) * i);
+      outputRange.push((cardPadding + cardHeight) * -i);
     }
-
-    const toValue = toggle ? -windowHeight / 4 : windowHeight / 4;
-    return withTiming(toValue);
-  });
-  const translateXValue = useDerivedValue(() => {
-    if (toggle === undefined) {
-      return withTiming(0);
-    }
-
-    const toValue = toggle ? windowWidth / 4 : -windowWidth / 4;
-    return withTiming(toValue);
-  });
-  const translateValue2 = useDerivedValue(() => {
-    const value = translateYValue.value;
-    return withSpring(value);
-  });
-
-  const boxAnimatedStyle = useAnimatedStyle(() => {
-    return {
-      transform: [
-        {
-          translateY: translateYValue.value,
-        },
-        {
-          translateX: translateXValue.value,
-        },
-      ],
-    };
-  });
-
-  const boxAnimatedStyle2 = useAnimatedStyle(() => {
-    return {
-      transform: [
-        {
-          translateY: translateValue2.value,
-        },
-      ],
-    };
+    const paddingTop = i === 0 ? cardPadding + insets.top : cardPadding;
+    const paddingBottom =
+      i === cardsData.length - 1 ? insets.bottom + cardPadding : 0;
+    return (
+      <AnimatedCard
+        key={card.id}
+        inputRange={inputRange}
+        outputRange={outputRange}
+        extrapolate="clamp"
+        style={[
+          styles.card,
+          {
+            paddingTop,
+            paddingBottom,
+          },
+        ]}
+        card={card}
+        cardHeight={cardHeight}
+        cardTitleHeight={cardTitleHeight}
+        cardPadding={cardPadding}
+      />
+    );
   });
 
   return (
-    <TouchableOpacity
-      activeOpacity={1}
-      style={styles.container}
-      onPress={() => {
-        setToggle((s) => !s);
-      }}>
-      <ScrollView onScroll></ScrollView>
-      <View style={styles.row}>
-        <Animated.View style={[styles.boxContainer, boxAnimatedStyle]} />
-        <Animated.View style={[styles.boxContainer, boxAnimatedStyle2]} />
+    <View style={styles.container}>
+      <View style={styles.cardContainer}>
+        <AnimatedContext.Provider value={animatedY}>
+          {renderedCards}
+        </AnimatedContext.Provider>
       </View>
-    </TouchableOpacity>
+      <Animated.ScrollView
+        style={styles.scrollView}
+        onScroll={scrollHandler}
+        scrollEventThrottle={16}
+      />
+    </View>
   );
 }
 
@@ -82,15 +71,17 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
   },
-  row: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+  cardContainer: {
+    flex: 1,
   },
-  boxContainer: {
-    margin: 10,
-    width: 100,
-    height: 100,
-    borderRadius: 100 / 4,
-    backgroundColor: 'blue',
+  scrollView: {
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    bottom: 0,
+    left: 0,
+  },
+  card: {
+    paddingHorizontal: cardPadding,
   },
 });
