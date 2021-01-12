@@ -1,5 +1,5 @@
 import React from 'react';
-import {StyleSheet, Text, View, FlatList} from 'react-native';
+import {StyleSheet, View, FlatList} from 'react-native';
 import PropTypes from 'prop-types';
 
 import {HEADER_ITEM_HEIGHT, HEADER_ITEM_PADDING} from '../Utils/Cons';
@@ -24,7 +24,7 @@ export default HeaderList;
 
 const styles = StyleSheet.create({
   container: {
-    height: HEADER_ITEM_HEIGHT,
+    height: HEADER_ITEM_HEIGHT + HEADER_ITEM_PADDING,
     overflow: 'hidden',
   },
 });

@@ -4,14 +4,15 @@ import React, {useState} from 'react';
 import {SafeAreaView} from 'react-native-safe-area-context';
 
 import HeaderList from './components/HeaderList';
+import ImageList from './components/ImageList';
 
 import datas from './datas/datas.json';
 
 export default function AnimatedStyleUpdateExample() {
-  console.log(`data: ${JSON.stringify(datas)}`);
   return (
     <SafeAreaView style={styles.container}>
       <HeaderList datas={datas} />
+      <ImageList datas={datas} />
     </SafeAreaView>
   );
 }
@@ -19,5 +20,7 @@ export default function AnimatedStyleUpdateExample() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    flexDirection: 'column',
+    justifyContent: 'center',
   },
 });
