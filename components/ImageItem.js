@@ -2,21 +2,20 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import {Image, StyleSheet, View} from 'react-native';
 
-const ImageItem = ({style, uri, width, height}) => {
+const ImageItem = ({style, uri, width, height, padding}) => {
   return (
-    <View style={[styles.container, style]}>
-      {/* Item */}
-      <Image
+    <View style={[styles.container, {padding}, style]}>
+      <View
         style={[
-          styles.image,
+          styles.shape,
           {
             width,
             height,
             borderRadius: width * 0.1,
           },
-        ]}
-        source={{uri}}
-      />
+        ]}>
+        <Image style={[styles.image]} source={{uri}} />
+      </View>
     </View>
   );
 };
@@ -29,8 +28,14 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 2,
   },
+  shape: {
+    overflow: 'hidden',
+  },
   image: {
     resizeMode: 'cover',
+    width: undefined,
+    height: undefined,
+    flex: 1,
   },
 });
 
@@ -39,4 +44,5 @@ ImageItem.propTypes = {
   uri: PropTypes.string.isRequired,
   width: PropTypes.number.isRequired,
   height: PropTypes.number.isRequired,
+  padding: PropTypes.number.isRequired,
 };
