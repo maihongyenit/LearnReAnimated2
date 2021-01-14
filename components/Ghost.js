@@ -4,8 +4,8 @@ import Animated from 'react-native-reanimated';
 
 class Ghost extends React.Component {
   render() {
-    const {style, children} = this.props;
-    return <View style={style}>{children}</View>;
+    const {children, ...restProps} = this.props;
+    return <View {...restProps}>{children}</View>;
   }
 }
 
