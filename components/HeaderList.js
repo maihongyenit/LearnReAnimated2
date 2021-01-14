@@ -13,7 +13,6 @@ const HeaderList = ({style, datas}) => {
         data={datas}
         keyExtractor={(_, i) => `${i}`}
         renderItem={({item: {title, location, date}, index}) => {
-          console.log(`render ${index}`);
           return (
             <OverFlowAnimated index={index} itemHeight={HEADER_ITEM_HEIGHT}>
               <HeaderItem
