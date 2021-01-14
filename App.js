@@ -1,12 +1,6 @@
-import {AppRegistry, Platform} from 'react-native';
-import {name as appName} from './app.json';
-import App from './Screen';
+import Screen from './Screen';
+import React from 'react';
 
-AppRegistry.registerComponent(appName, () => App);
-
-if (Platform.OS === 'web') {
-  const rootTag = document.getElementById('root');
-  AppRegistry.runApplication(appName, {rootTag});
+export default function App() {
+  return <Screen />;
 }
-
-export default App;
