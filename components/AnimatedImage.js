@@ -3,40 +3,79 @@ import {StyleSheet} from 'react-native';
 import Animated, {interpolate, useAnimatedStyle} from 'react-native-reanimated';
 import PropTypes from 'prop-types';
 
-import {AnimatedContext} from './Context';
+import {ImagesAnimatedContext} from './Context';
+
 import {
   makeInputRange,
-  makeOutputRange,
-  makeOutputRangeZ,
+  makeOutTranslate,
+  makeOutZIndex,
+  makeOutScale,
+  makeOutOpacity,
 } from '../Utils/Utils';
 
-const AnimatedImage = ({index, len, translateDistance, children, padding}) => {
-  const {animatedIndex} = useContext(AnimatedContext);
+const defaultTranslateValue = 50;
+const defaultScaleValue = 0.8;
+const defaultOpacityValue = 0.8;
+
+const AnimatedImage = ({
+  index,
+  len,
+  translateValue,
+  scaleValue,
+  opacityValue,
+  children,
+  padding,
+}) => {
+  const imagesAnimated = useContext(ImagesAnimatedContext);
+
   const inputRange = makeInputRange(len);
-  const outputRange = makeOutputRange(inputRange, index, translateDistance);
-  const outputRangeZ = makeOutputRangeZ(inputRange, index);
+  const outTranslateX = makeOutTranslate(
+    inputRange,
+    index,
+    translateValue || defaultTranslateValue,
+  );
+  const outZIndex = makeOutZIndex(inputRange, index);
+  const outScale = makeOutScale(
+    inputRange,
+    index,
+    scaleValue || defaultScaleValue,
+  );
+  const outOpacity = makeOutOpacity(
+    inputRange,
+    index,
+    opacityValue || defaultOpacityValue,
+  );
 
   const animatedStyle = useAnimatedStyle(() => {
     const translateX = interpolate(
-      animatedIndex.value,
+      imagesAnimated.value,
       inputRange,
-      outputRange,
+      outTranslateX,
       'clamp',
     );
     const zIndex = interpolate(
-      animatedIndex.value,
+      imagesAnimated.value,
       inputRange,
-      outputRangeZ,
+      outZIndex,
+      'clamp',
+    );
+    const scale = interpolate(
+      imagesAnimated.value,
+      inputRange,
+      outScale,
+      'clamp',
+    );
+    const opacity = interpolate(
+      imagesAnimated.value,
+      inputRange,
+      outOpacity,
       'clamp',
     );
 
     return {
-      transform: [
-        {
-          translateX,
-        },
-      ],
+      transform: [{translateX}, {scale}],
       zIndex,
+      opacity,
     };
   });
 
@@ -58,7 +97,9 @@ const styles = StyleSheet.create({
 AnimatedImage.propTypes = {
   index: PropTypes.number.isRequired,
   len: PropTypes.number.isRequired,
-  translateDistance: PropTypes.number.isRequired,
+  translateValue: PropTypes.number,
+  scaleValue: PropTypes.number,
+  opacityValue: PropTypes.number,
   children: PropTypes.node.isRequired,
   padding: PropTypes.number,
 };
