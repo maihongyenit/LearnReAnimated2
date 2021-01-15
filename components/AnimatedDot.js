@@ -1,4 +1,4 @@
-import React, {useContext} from 'react';
+import React from 'react';
 import {StyleSheet} from 'react-native';
 import Animated, {
   interpolate,
@@ -7,20 +7,14 @@ import Animated, {
 } from 'react-native-reanimated';
 import PropTypes from 'prop-types';
 
-import {AnimatedContext} from './Context';
-
-import {composeStyles} from '../Utils/Utils';
+import {composeStyles, makeInputRangeFirstLast} from '../Utils/Utils';
 
 const defaultDotSize = 10;
 const defaultColor = 'white';
 const defaultDotSizeActive = defaultDotSize * 3;
 const defaultColorActive = 'red';
 
-const AnimatedDot = ({style, index, activeColor, activeWidth, len}) => {
-  const {animatedIndex, animatedIndexFirst, animatedIndexLast} = useContext(
-    AnimatedContext,
-  );
-
+const AnimatedDot = ({style, index, animateProps, len, animated}) => {
   let widthInActive, colorInActive, composeStyle;
   if (style) {
     composeStyle = composeStyles(style);
@@ -30,30 +24,34 @@ const AnimatedDot = ({style, index, activeColor, activeWidth, len}) => {
     widthInActive = defaultDotSize;
     colorInActive = defaultColor;
   }
-  const colorActive = activeColor || defaultColorActive;
-  const widthActive = activeWidth || defaultDotSizeActive;
+  const colorActive =
+    (animateProps && animateProps.activeColor) || defaultColorActive;
+  const widthActive =
+    (animateProps && animateProps.activeWidth) || defaultDotSizeActive;
+
+  let inputRange, outputRangeColor, outputRangeWidth;
+  if (index === 0) {
+    inputRange = makeInputRangeFirstLast();
+    outputRangeColor = [colorInActive, colorActive];
+    outputRangeWidth = [widthInActive, widthActive];
+  } else if (index === len - 1) {
+    inputRange = makeInputRangeFirstLast();
+    outputRangeColor = [colorInActive, colorActive];
+    outputRangeWidth = [widthInActive, widthActive];
+  } else {
+    inputRange = [index - 1, index, index + 1];
+    outputRangeColor = [colorInActive, colorActive, colorInActive];
+    outputRangeWidth = [widthInActive, widthActive, widthInActive];
+  }
 
   const animatedStyle = useAnimatedStyle(() => {
-    let inputRange, outputRangeColor, outputRangeWidth, value;
-    if (index === 0) {
-      inputRange = [-1, 0];
-      outputRangeColor = [colorInActive, colorActive];
-      outputRangeWidth = [widthInActive, widthActive];
-      value = animatedIndexFirst.value;
-    } else if (index === len - 1) {
-      inputRange = [-1, 0];
-      outputRangeColor = [colorInActive, colorActive];
-      outputRangeWidth = [widthInActive, widthActive];
-      value = animatedIndexLast.value;
-    } else {
-      inputRange = [index - 1, index, index + 1];
-      outputRangeColor = [colorInActive, colorActive, colorInActive];
-      outputRangeWidth = [widthInActive, widthActive, widthInActive];
-      value = animatedIndex.value;
-    }
     return {
-      width: interpolate(value, inputRange, outputRangeWidth, 'clamp'),
-      backgroundColor: interpolateColor(value, inputRange, outputRangeColor),
+      width: interpolate(animated.value, inputRange, outputRangeWidth, 'clamp'),
+      backgroundColor: interpolateColor(
+        animated.value,
+        inputRange,
+        outputRangeColor,
+      ),
     };
   });
 
@@ -82,4 +80,5 @@ AnimatedDot.propTypes = {
     activeColor: PropTypes.string,
     activeWidth: PropTypes.number,
   }),
+  animated: PropTypes.object.isRequired,
 };

@@ -1,13 +1,49 @@
-import React from 'react';
+import React, {useContext} from 'react';
 import {StyleSheet, View} from 'react-native';
 import PropTypes from 'prop-types';
+import {useDerivedValue, withTiming} from 'react-native-reanimated';
 
 import AnimatedDot from './AnimatedDot';
+import {AnimatedContext} from './Context';
 
-import {composeStyles} from '../Utils/Utils';
+import {composeStyles, getUpperBound, getLowerBound} from '../Utils/Utils';
 
 const AnimatedDots = ({style, dotStyle, datas, animateProps}) => {
+  const activeIndex = useContext(AnimatedContext);
+  const upper = getUpperBound();
+  const lower = getLowerBound();
+
+  const animatedFirstDot = useDerivedValue(() => {
+    if (activeIndex.value === 0) {
+      return withTiming(upper);
+    }
+    return withTiming(lower);
+  });
+  const animatedLastDot = useDerivedValue(() => {
+    if (activeIndex.value === datas.length - 1) {
+      return withTiming(upper);
+    }
+    return withTiming(lower);
+  });
+  const animatedDots = useDerivedValue(() => {
+    // Dont animated when reverse index to 0
+    if (activeIndex.value === 0) {
+      return 0;
+    } else {
+      return withTiming(activeIndex.value);
+    }
+  });
+
   const renderedDots = datas.map((_, i) => {
+    let animated;
+    if (i === 0) {
+      animated = animatedFirstDot;
+    } else if (i === datas.length - 1) {
+      animated = animatedLastDot;
+    } else {
+      animated = animatedDots;
+    }
+
     return (
       <AnimatedDot
         key={i}
@@ -15,6 +51,7 @@ const AnimatedDots = ({style, dotStyle, datas, animateProps}) => {
         len={datas.length}
         style={dotStyle}
         animateProps={animateProps}
+        animated={animated}
       />
     );
   });
