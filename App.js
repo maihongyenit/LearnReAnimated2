@@ -1,6 +1,11 @@
 import Screen from './Screen';
 import React from 'react';
+import {SafeAreaProvider} from 'react-native-safe-area-context';
 
 export default function App() {
-  return <Screen />;
+  return (
+    <SafeAreaProvider>
+      <Screen />
+    </SafeAreaProvider>
+  );
 }
