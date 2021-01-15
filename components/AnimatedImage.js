@@ -1,9 +1,7 @@
-import React, {useContext} from 'react';
+import React from 'react';
 import {StyleSheet} from 'react-native';
 import Animated, {interpolate, useAnimatedStyle} from 'react-native-reanimated';
 import PropTypes from 'prop-types';
-
-import {ImagesAnimatedContext} from './Context';
 
 import {
   makeInputRange,
@@ -25,9 +23,8 @@ const AnimatedImage = ({
   opacityValue,
   children,
   padding,
+  animated,
 }) => {
-  const imagesAnimated = useContext(ImagesAnimatedContext);
-
   const inputRange = makeInputRange(len);
   const outTranslateX = makeOutTranslate(
     inputRange,
@@ -48,25 +45,15 @@ const AnimatedImage = ({
 
   const animatedStyle = useAnimatedStyle(() => {
     const translateX = interpolate(
-      imagesAnimated.value,
+      animated.value,
       inputRange,
       outTranslateX,
       'clamp',
     );
-    const zIndex = interpolate(
-      imagesAnimated.value,
-      inputRange,
-      outZIndex,
-      'clamp',
-    );
-    const scale = interpolate(
-      imagesAnimated.value,
-      inputRange,
-      outScale,
-      'clamp',
-    );
+    const zIndex = interpolate(animated.value, inputRange, outZIndex, 'clamp');
+    const scale = interpolate(animated.value, inputRange, outScale, 'clamp');
     const opacity = interpolate(
-      imagesAnimated.value,
+      animated.value,
       inputRange,
       outOpacity,
       'clamp',
@@ -102,4 +89,5 @@ AnimatedImage.propTypes = {
   opacityValue: PropTypes.number,
   children: PropTypes.node.isRequired,
   padding: PropTypes.number,
+  animated: PropTypes.object.isRequired,
 };

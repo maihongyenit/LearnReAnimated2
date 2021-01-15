@@ -1,8 +1,8 @@
 import React from 'react';
-import {StyleSheet, View, Image} from 'react-native';
+import {StyleSheet, View, Image, Text} from 'react-native';
 import PropTypes from 'prop-types';
 
-const ImageItem = ({width, height, uri}) => {
+const ImageItem = ({width, height, poster, index}) => {
   return (
     <View style={styles.container}>
       <View
@@ -14,7 +14,8 @@ const ImageItem = ({width, height, uri}) => {
             borderRadius: width * 0.05,
           },
         ]}>
-        <Image style={styles.image} source={{uri}} />
+        <Image style={styles.image} source={{uri: poster}} />
+        <Text style={styles.text}>{index}</Text>
       </View>
     </View>
   );
@@ -37,10 +38,19 @@ const styles = StyleSheet.create({
     height: undefined,
     resizeMode: 'cover',
   },
+  text: {
+    color: 'red',
+    fontSize: 16,
+    fontWeight: 'bold',
+    position: 'absolute',
+    top: 0,
+    left: 0,
+  },
 });
 
 ImageItem.propTypes = {
+  index: PropTypes.number.isRequired,
   width: PropTypes.number.isRequired,
   height: PropTypes.number.isRequired,
-  uri: PropTypes.string.isRequired,
+  poster: PropTypes.string.isRequired,
 };

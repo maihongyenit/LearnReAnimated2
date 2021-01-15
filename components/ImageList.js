@@ -5,7 +5,7 @@ import {useDerivedValue, withTiming} from 'react-native-reanimated';
 
 import ImageItem from './ImageItem';
 import AnimatedImage from './AnimatedImage';
-import {ImagesAnimatedContext, AnimatedContext} from './Context';
+import {AnimatedContext} from './Context';
 
 const ImageList = ({
   style,
@@ -17,10 +17,11 @@ const ImageList = ({
   scaleValue,
   opacityValue,
 }) => {
-  const {activeIndex} = useContext(AnimatedContext);
+  const activeIndex = useContext(AnimatedContext);
   const imagesAnimated = useDerivedValue(() => {
     return withTiming(activeIndex.value);
   });
+
   const renderedItems = datas.map(({poster}, i) => {
     return (
       <AnimatedImage
@@ -30,7 +31,8 @@ const ImageList = ({
         padding={padding}
         translateValue={translateValue}
         scaleValue={scaleValue}
-        opacityValue={opacityValue}>
+        opacityValue={opacityValue}
+        animated={imagesAnimated}>
         <ImageItem
           width={itemWidth}
           height={itemHeight}
@@ -42,18 +44,16 @@ const ImageList = ({
   });
 
   return (
-    <ImagesAnimatedContext.Provider value={imagesAnimated}>
-      <View
-        style={[
-          styles.container,
-          {
-            height: itemHeight + 2 * padding,
-          },
-          style,
-        ]}>
-        {renderedItems}
-      </View>
-    </ImagesAnimatedContext.Provider>
+    <View
+      style={[
+        styles.container,
+        {
+          height: itemHeight + 2 * padding,
+        },
+        style,
+      ]}>
+      {renderedItems}
+    </View>
   );
 };
 
