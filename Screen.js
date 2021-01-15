@@ -1,25 +1,23 @@
-import Animated, {
-  useSharedValue,
-  withTiming,
-  useAnimatedStyle,
-  useDerivedValue,
-  Easing,
-  withSpring,
-  withDecay,
-  withRepeat,
-  interpolate,
-} from 'react-native-reanimated';
-import {View, StyleSheet, Dimensions, TouchableOpacity} from 'react-native';
-import React, {useState} from 'react';
+import {StyleSheet} from 'react-native';
+import React from 'react';
+import {SafeAreaView} from 'react-native-safe-area-context';
 
-export default function AnimatedStyleUpdateExample(props) {
+import ZingMp3Stack from './components/ZingMp3Stack';
+
+import dataJson from './datas/datas.json';
+
+export default function ZingMp3StackEx() {
   return (
-    <View
-      style={{
-        backgroundColor: 'black',
-        flex: 1,
-      }}></View>
+    <SafeAreaView style={styles.container}>
+      <ZingMp3Stack datas={dataJson} />
+    </SafeAreaView>
   );
 }
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    backgroundColor: 'chocolate',
+  },
+});
